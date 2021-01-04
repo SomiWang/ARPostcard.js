@@ -126,7 +126,7 @@
             geometry0.faces.splice(4, 2); // make hole by removing top two triangles
 
             let material0 = new THREE.MeshBasicMaterial({
-                colorWrite: false
+                colorWrite: true
             });
 
             let mesh0 = new THREE.Mesh(geometry0, material0);
