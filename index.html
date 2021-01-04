@@ -122,7 +122,7 @@
             });
 
             // the invisibility cloak (box with a hole)
-            let geometry0 = new THREE.BoxGeometry(20, 20, 20);
+            let geometry0 = new THREE.BoxGeometry(2, 2, 2);
             geometry0.faces.splice(4, 2); // make hole by removing top two triangles
 
             let material0 = new THREE.MeshBasicMaterial({
@@ -130,7 +130,7 @@
             });
 
             let mesh0 = new THREE.Mesh(geometry0, material0);
-            mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
+            mesh0.scale.set(20, 20, 20).multiplyScalar(20.01);
             mesh0.scene.position.z = -100;
             mesh0.scene.position.x = 200;
             mesh0.scene.position.y = -200;
