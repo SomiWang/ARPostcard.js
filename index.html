@@ -1,208 +1,208 @@
 <!DOCTYPE html>
 <head>
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<title>Somi Hole Test</title>
-	<!-- three.js library -->
-	<script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
-	<!-- three.js load GLTF -->
-	<script src='three.js/examples/vendor/three.js/GLTFLoader.js'></script>
-	<!-- ar.js -->
-	<script src='three.js/build/ar-nft.js'></script>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>Somi Hole Test</title>
+    <!-- three.js library -->
+    <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
+    <!-- three.js load GLTF -->
+    <script src='three.js/examples/vendor/three.js/GLTFLoader.js'></script>
+    <!-- ar.js -->
+    <script src='three.js/build/ar-nft.js'></script>
 
 </head>
 
 <body style='margin : 0px; overflow: hidden; font-family: Monospace;'>
 
-	<script>
+    <script>
 
-		let camera, scene, renderer, loader, clock;
+        let camera, scene, renderer, loader, clock;
 
-		var deltaTime, totalTime;
+        var deltaTime, totalTime;
 
-		var arToolkitSource, arToolkitContext;
+        var arToolkitSource, arToolkitContext;
 
-		var markerRoot1;
+        var markerRoot1;
 
-		var mesh1;
+        var mesh1;
 
-		initialize();
-		animate();
+        initialize();
+        animate();
 
-		function initialize() {
+        function initialize() {
 
-			scene = new THREE.Scene();
+            scene = new THREE.Scene();
 
-			let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
-			scene.add(ambientLight);
+            let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+            scene.add(ambientLight);
 
-			camera = new THREE.Camera();
-			scene.add(camera);
+            camera = new THREE.Camera();
+            scene.add(camera);
 
-			var light = new THREE.AmbientLight(0xffffff);
-			scene.add(light);
+            var light = new THREE.AmbientLight(0xffffff);
+            scene.add(light);
 
-			renderer = new THREE.WebGLRenderer({
-				antialias: true,
-				alpha: true
-			});
-			renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-			renderer.setSize(640, 480);
-			renderer.domElement.style.position = 'absolute'
-			renderer.domElement.style.top = '0px'
-			renderer.domElement.style.left = '0px'
-			document.body.appendChild(renderer.domElement);
+            renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                alpha: true
+            });
+            renderer.setClearColor(new THREE.Color('lightgrey'), 0)
+            renderer.setSize(640, 480);
+            renderer.domElement.style.position = 'absolute'
+            renderer.domElement.style.top = '0px'
+            renderer.domElement.style.left = '0px'
+            document.body.appendChild(renderer.domElement);
 
-			clock = new THREE.Clock();
-			deltaTime = 0;
-			totalTime = 0;
+            clock = new THREE.Clock();
+            deltaTime = 0;
+            totalTime = 0;
 
-			////////////////////////////////////////////////////////////
-			// setup arToolkitSource
-			////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////
+            // setup arToolkitSource
+            ////////////////////////////////////////////////////////////
 
-			arToolkitSource = new THREEx.ArToolkitSource({
-				sourceType: 'webcam',
-			});
+            arToolkitSource = new THREEx.ArToolkitSource({
+                sourceType: 'webcam',
+            });
 
-			function onResize() {
-				arToolkitSource.onResizeElement()
-				arToolkitSource.copyElementSizeTo(renderer.domElement)
-				if (arToolkitContext.arController !== null) {
-					arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)
-				}
-			}
+            function onResize() {
+                arToolkitSource.onResizeElement()
+                arToolkitSource.copyElementSizeTo(renderer.domElement)
+                if (arToolkitContext.arController !== null) {
+                    arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)
+                }
+            }
 
-			arToolkitSource.init(function onReady() {
-				onResize()
-			});
+            arToolkitSource.init(function onReady() {
+                onResize()
+            });
 
-			// handle resize event
-			window.addEventListener('resize', function () {
-				onResize()
-			});
+            // handle resize event
+            window.addEventListener('resize', function () {
+                onResize()
+            });
 
-			////////////////////////////////////////////////////////////
-			// setup arToolkitContext
-			////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////
+            // setup arToolkitContext
+            ////////////////////////////////////////////////////////////
 
-			// create atToolkitContext
-			arToolkitContext = new THREEx.ArToolkitContext({
-				//cameraParametersUrl: 'data/camera_para.dat',
-				detectionMode: 'mono'
-			});
+            // create atToolkitContext
+            arToolkitContext = new THREEx.ArToolkitContext({
+                //cameraParametersUrl: 'data/camera_para.dat',
+                detectionMode: 'mono'
+            });
 
-			// copy projection matrix to camera when initialization complete
-			arToolkitContext.init(function onCompleted() {
-				camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-			});
+            // copy projection matrix to camera when initialization complete
+            arToolkitContext.init(function onCompleted() {
+                camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+            });
 
-			////////////////////////////////////////////////////////////
-			// setup markerRoots
-			////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////
+            // setup markerRoots
+            ////////////////////////////////////////////////////////////
 
-			// build markerControls
-			markerRoot1 = new THREE.Group();
-			markerRoot1.name = 'marker1';
-			scene.add(markerRoot1);
-			let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-				type: 'nft',
-				descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/Porygon/PorygonImage/Porygon',
-				changeMatrixMode: 'cameraTransformMatrix'
-			})
-
-
-			loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/CubeCave/');
-			loader.load('TestCubeCave.gltf', function (gltf) {
-				gltf.scene.scale.set(5, 5, 5);
-
-				gltf.scene.position.z = -200;
-				gltf.scene.position.x = 100;
-				gltf.scene.position.y = 100;
-				markerRoot1.add(gltf.scene);
-			});
-
-			// the invisibility cloak (box with a hole)
-			let geometry0 = new THREE.BoxGeometry(2, 2, 2);
-			geometry0.faces.splice(4, 2); // make hole by removing top two triangles
-
-			let material0 = new THREE.MeshBasicMaterial({
-				colorWrite: false
-			});
-
-			let mesh0 = new THREE.Mesh(geometry0, material0);
-			mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
-			mesh0.position.y = -1;
-			markerRoot1.add(mesh0);
+            // build markerControls
+            markerRoot1 = new THREE.Group();
+            markerRoot1.name = 'marker1';
+            scene.add(markerRoot1);
+            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+                type: 'nft',
+                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/Porygon/PorygonImage/Porygon',
+                changeMatrixMode: 'cameraTransformMatrix'
+            })
 
 
-			threeGLTFLoader.load("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/Flamingo.glb", function (gltf) {
-				model = gltf.scene.children[0];
-				model.name = 'Flamingo';
+            loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/CubeCave/');
+            loader.load('TestCubeCave.gltf', function (gltf) {
+                gltf.scene.scale.set(5, 5, 5);
 
-				var animation = gltf.animations[0];
-				var mixer = new THREE.AnimationMixer(model);
-				mixers.push(mixer);
-				var action = mixer.clipAction(animation);
-				action.play();
+                gltf.scene.position.z = -200;
+                gltf.scene.position.x = 100;
+                gltf.scene.position.y = 100;
+                markerRoot1.add(gltf.scene);
+            });
 
-				root.matrixAutoUpdate = false;
-				root.add(model);
+            // the invisibility cloak (box with a hole)
+            let geometry0 = new THREE.BoxGeometry(2, 2, 2);
+            geometry0.faces.splice(4, 2); // make hole by removing top two triangles
 
-				model.position.z = -200;
-				model.position.x = 100;
-				model.position.y = 100;
+            let material0 = new THREE.MeshBasicMaterial({
+                colorWrite: false
+            });
 
-
-				//////////////////////////////////////////////////////////////////////////////////
-				//		render the whole thing on the page
-				//////////////////////////////////////////////////////////////////////////////////
-
-				var animate = function () {
-					requestAnimationFrame(animate);
-
-					if (mixers.length > 0) {
-						for (var i = 0; i < mixers.length; i++) {
-							mixers[i].update(clock.getDelta());
-						}
-					}
-
-					if (!arToolkitSource.ready) {
-						return;
-					}
-
-					arToolkitContext.update(arToolkitSource.domElement)
-
-					// update scene.visible if the marker is seen
-					scene.visible = camera.visible;
-
-					renderer.render(scene, camera);
-				};
-
-				requestAnimationFrame(animate);
-			}
-	    }
-
-		function update() {
-			// update artoolkit on every frame
-			if (arToolkitSource.ready !== false)
-				arToolkitContext.update(arToolkitSource.domElement);
-		}
+            let mesh0 = new THREE.Mesh(geometry0, material0);
+            mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
+            mesh0.position.y = -1;
+            markerRoot1.add(mesh0);
 
 
-		function render() {
-			renderer.render(scene, camera);
-		}
+            threeGLTFLoader.load("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/Flamingo.glb", function (gltf) {
+                model = gltf.scene.children[0];
+                model.name = 'Flamingo';
+
+                var animation = gltf.animations[0];
+                var mixer = new THREE.AnimationMixer(model);
+                mixers.push(mixer);
+                var action = mixer.clipAction(animation);
+                action.play();
+
+                markerRoot1.matrixAutoUpdate = false;
+                markerRoot1.add(model);
+
+                model.position.z = -200;
+                model.position.x = 100;
+                model.position.y = 100;
 
 
-		function animate() {
-			requestAnimationFrame(animate);
-			deltaTime = clock.getDelta();
-			totalTime += deltaTime;
-			update();
-			render();
-		}
+                //////////////////////////////////////////////////////////////////////////////////
+                //		render the whole thing on the page
+                //////////////////////////////////////////////////////////////////////////////////
 
-	</script>
+                var animate = function () {
+                    requestAnimationFrame(animate);
+
+                    if (mixers.length > 0) {
+                        for (var i = 0; i < mixers.length; i++) {
+                            mixers[i].update(clock.getDelta());
+                        }
+                    }
+
+                    if (!arToolkitSource.ready) {
+                        return;
+                    }
+
+                    arToolkitContext.update(arToolkitSource.domElement)
+
+                    // update scene.visible if the marker is seen
+                    scene.visible = camera.visible;
+
+                    renderer.render(scene, camera);
+                };
+
+                requestAnimationFrame(animate);
+            });
+        }
+
+        function update() {
+            // update artoolkit on every frame
+            if (arToolkitSource.ready !== false)
+                arToolkitContext.update(arToolkitSource.domElement);
+        }
+
+
+        function render() {
+            renderer.render(scene, camera);
+        }
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            deltaTime = clock.getDelta();
+            totalTime += deltaTime;
+            update();
+            render();
+        }
+
+    </script>
 
 </body>
 </html>
