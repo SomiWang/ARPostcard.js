@@ -113,7 +113,7 @@
 
 			loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/CubeCave/');
 			loader.load('TestCubeCave.gltf', function (gltf) {
-				//gltf.scene.scale.set(0.5, 0.5, 0.5);
+				gltf.scene.scale.set(5, 5, 5);
 				
 				gltf.scene.position.z = -200;
                                 gltf.scene.position.x = 100;
