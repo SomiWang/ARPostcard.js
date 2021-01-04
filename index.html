@@ -106,7 +106,7 @@
 			scene.add(markerRoot1);
 			let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
 				type: 'nft',
-                                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/Porygon/PorygonImage/Porygon',
+				descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/Porygon/PorygonImage/Porygon',
 				changeMatrixMode: 'cameraTransformMatrix'
 			})
 
@@ -114,10 +114,10 @@
 			loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/CubeCave/');
 			loader.load('TestCubeCave.gltf', function (gltf) {
 				gltf.scene.scale.set(5, 5, 5);
-				
+
 				gltf.scene.position.z = -200;
-                                gltf.scene.position.x = 100;
-                                gltf.scene.position.y = 100;
+				gltf.scene.position.x = 100;
+				gltf.scene.position.y = 100;
 				markerRoot1.add(gltf.scene);
 			});
 
@@ -133,53 +133,54 @@
 			mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
 			mesh0.position.y = -1;
 			markerRoot1.add(mesh0);
-			
-			
+
+
 			threeGLTFLoader.load("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/Flamingo.glb", function (gltf) {
-            model = gltf.scene.children[0];
-            model.name = 'Flamingo';
+				model = gltf.scene.children[0];
+				model.name = 'Flamingo';
 
-            var animation = gltf.animations[0];
-            var mixer = new THREE.AnimationMixer(model);
-            mixers.push(mixer);
-            var action = mixer.clipAction(animation);
-            action.play();
+				var animation = gltf.animations[0];
+				var mixer = new THREE.AnimationMixer(model);
+				mixers.push(mixer);
+				var action = mixer.clipAction(animation);
+				action.play();
 
-            root.matrixAutoUpdate = false;
-            root.add(model);
+				root.matrixAutoUpdate = false;
+				root.add(model);
 
-            model.position.z = -200;
-            model.position.x = 100;
-            model.position.y = 100;
+				model.position.z = -200;
+				model.position.x = 100;
+				model.position.y = 100;
 
 
-            //////////////////////////////////////////////////////////////////////////////////
-            //		render the whole thing on the page
-            //////////////////////////////////////////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////////////////////
+				//		render the whole thing on the page
+				//////////////////////////////////////////////////////////////////////////////////
 
-            var animate = function() {
-                requestAnimationFrame(animate);
+				var animate = function () {
+					requestAnimationFrame(animate);
 
-                if (mixers.length > 0) {
-                    for (var i = 0; i < mixers.length; i++) {
-                        mixers[i].update(clock.getDelta());
-                    }
-                }
+					if (mixers.length > 0) {
+						for (var i = 0; i < mixers.length; i++) {
+							mixers[i].update(clock.getDelta());
+						}
+					}
 
-                if (!arToolkitSource.ready) {
-                    return;
-                }
+					if (!arToolkitSource.ready) {
+						return;
+					}
 
-                arToolkitContext.update( arToolkitSource.domElement )
+					arToolkitContext.update(arToolkitSource.domElement)
 
-                // update scene.visible if the marker is seen
-                scene.visible = camera.visible;
+					// update scene.visible if the marker is seen
+					scene.visible = camera.visible;
 
-                renderer.render(scene, camera);
-            };
+					renderer.render(scene, camera);
+				};
 
-            requestAnimationFrame(animate);
-        }
+				requestAnimationFrame(animate);
+			}
+	    }
 
 		function update() {
 			// update artoolkit on every frame
