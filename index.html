@@ -115,8 +115,8 @@
             loader.load('TestCubeCave.gltf', function (gltf) {
                 gltf.scene.scale.set(20, 20, 20);
 
-                gltf.scene.position.z = -100;
-                gltf.scene.position.x = 0;
+                gltf.scene.position.z = -300;
+                gltf.scene.position.x = 50;
                 gltf.scene.position.y = 0;
                 markerRoot1.add(gltf.scene);
             });
@@ -132,55 +132,7 @@
             let mesh0 = new THREE.Mesh(geometry0, material0);
             mesh0.scale.set(1, 1, 1).multiplyScalar(1.01);
             mesh0.position.y = -1;
-            markerRoot1.add(mesh0);
-
-
-
-            loader = new THREE.GLTFLoader().load("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/Flamingo.glb", function (gltf) {
-                model = gltf.scene.children[0];
-                model.name = 'Flamingo';
-
-                var animation = gltf.animations[0];
-                var mixer = new THREE.AnimationMixer(model);
-                mixers.push(mixer);
-                var action = mixer.clipAction(animation);
-                action.play();
-
-                markerRoot1.matrixAutoUpdate = false;
-                markerRoot1.add(model);
-
-                model.position.z = -200;
-                model.position.x = 100;
-                model.position.y = 100;
-
-
-                //////////////////////////////////////////////////////////////////////////////////
-                //		render the whole thing on the page
-                //////////////////////////////////////////////////////////////////////////////////
-
-                var animate = function () {
-                    requestAnimationFrame(animate);
-
-                    if (mixers.length > 0) {
-                        for (var i = 0; i < mixers.length; i++) {
-                            mixers[i].update(clock.getDelta());
-                        }
-                    }
-
-                    if (!arToolkitSource.ready) {
-                        return;
-                    }
-
-                    arToolkitContext.update(arToolkitSource.domElement)
-
-                    // update scene.visible if the marker is seen
-                    scene.visible = camera.visible;
-
-                    renderer.render(scene, camera);
-                };
-
-                requestAnimationFrame(animate);
-            });
+            markerRoot1.add(mesh0);         
         }
 
         function update() {
