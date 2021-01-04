@@ -107,7 +107,7 @@
             let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
                 type: 'nft',
                 descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPorygon/main/Porygon/PorygonImage/Porygon',
-                changeMatrixMode: 'cameraTransformMatrix'
+                //changeMatrixMode: 'cameraTransformMatrix'
             })
 
 
@@ -117,7 +117,7 @@
 
                 gltf.scene.position.z = -1000;
                 gltf.scene.position.x = 100;
-                gltf.scene.position.y = 100;
+                gltf.scene.position.y = 70;
                 markerRoot1.add(gltf.scene);
             });
 
