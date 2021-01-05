@@ -115,14 +115,12 @@
             loader.load('TestCubeCave3.gltf', function (gltf) {
                 gltf.scene.scale.set(20, 20, 20);
 
-                gltf.scene.position.z = -100;
-                gltf.scene.position.x = 200;
-                gltf.scene.position.y = -500;
+                gltf.scene.position.z = 100;
+                gltf.scene.position.x = 100;
+                gltf.scene.position.y = -400;
 
-                var axis = new THREE.Vector3( 0, 1, 0 );
-                var angle = (Math.PI / 4)*3;
-                gltf.scene.children[0].applyAxisAngle( axis, angle );             
-
+                gltf.scene.children[0].rotation.x= Math.PI/2;             
+                gltf.scene.children[0].rotation.z= Math.PI;   
                 markerRoot1.add(gltf.scene);
             });
 
