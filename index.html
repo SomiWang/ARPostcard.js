@@ -113,15 +113,17 @@
 
             loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/');
             loader.load('TestCubeCave3.gltf', function (gltf) {
-                gltf.scene.scale.set(20, 20, 20);
+                var root = gltf.scene.children[0];
 
-                gltf.scene.position.z = 100;
-                gltf.scene.position.x = 100;
-                gltf.scene.position.y = -400;
+                root.scale.set(20, 20, 20);
 
-                gltf.scene.children[0].rotation.x= Math.PI/2;             
-                gltf.scene.children[0].rotation.z= Math.PI;   
-                markerRoot1.add(gltf.scene);
+                root.position.z = 100;
+                root.position.x = 100;
+                root.position.y = -400;
+
+                root.rotation.x= Math.PI/2;             
+                root.rotation.z= Math.PI;   
+                markerRoot1.add(root);
             });
 
             // the invisibility cloak (box with a hole)
