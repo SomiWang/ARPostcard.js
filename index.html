@@ -9,7 +9,7 @@
     <!-- ar.js -->
     <script src='three.js/build/ar-nft.js'></script>
     <!-- Object3D.js -->
-    <script src='three.js/src/core/Object3D.js'></script>
+    <script type="module" src='https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/src/core/Object3D.js'></script>
 </head>
 
 <body style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; margin : 0px; overflow: hidden;'>
@@ -32,15 +32,13 @@
         function initialize() {
 
             scene = new THREE.Scene();
-
             let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+            ambientLight.castShadow = true;
             scene.add(ambientLight);
-
+            //var light = new THREE.AmbientLight(0xffffff);
+            //scene.add(light);
             camera = new THREE.Camera();
             scene.add(camera);
-
-            var light = new THREE.AmbientLight(0xffffff);
-            scene.add(light);
 
             renderer = new THREE.WebGLRenderer({
                 antialias: true,
@@ -115,41 +113,40 @@
 
             loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/');
             loader.load('TestCubeCave3.gltf', function (gltf) {
-                //var _scene = gltf.scene;
                 var _root = gltf.scene.children[0];
 
                 _root.scale.set(5, 5, 5);
 
                 _root.children.forEach(element =>
-                    element.position.set(element.position.x - 15,
+                {
+                    element.position.set(
+                        element.position.x - 15,
                         element.position.y + 3,
                         element.position.z + 5
-                    ));
-                //_root.position.z += 100;
-                //_root.position.x += 100;
-                //_root.position.y += -400;
+                    );
 
+                    element.castShadow = true;
+                });        
                 _root.rotation.x = Math.PI / 2;
                 _root.rotation.z = Math.PI;
                 markerRoot1.add(_root);
             });
 
             // the invisibility cloak (box with a hole)
-            let geometry0 = new THREE.BoxGeometry(15, 5, 10);
+            let geometry0 = new THREE.BoxGeometry(16, 10, 14);
             geometry0.faces.splice(4, 2); // make hole by removing top two triangles
 
             let material0 = new THREE.MeshBasicMaterial({
-                colorWrite: true
+                colorWrite: false
             });
 
             let mesh0 = new THREE.Mesh(geometry0, material0);
-            mesh0.scale.set(8, 8, 8);
-
+            mesh0.scale.set(8, 8, 8);            
+            mesh0.position.set(77, -47, -55);
             let cloakRoot = new THREE.Object3D();
 
-
-
-            markerRoot1.add(mesh0);
+            cloakRoot.add(mesh0);
+            markerRoot1.add(cloakRoot);
         }
 
         function update() {
