@@ -106,13 +106,13 @@
             scene.add(markerRoot1);
             let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
                 type: 'nft',
-                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard_01',
+                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
                 //changeMatrixMode: 'cameraTransformMatrix'
             })
 
 
-            loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/');
-            loader.load('TestCubeCave2.glb', function (gltf) {
+            loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/');
+            loader.load('TestCubeCave3.gltf', function (gltf) {
                 gltf.scene.scale.set(20, 20, 20);
 
                 gltf.scene.position.z = -100;
