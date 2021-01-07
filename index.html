@@ -16,15 +16,20 @@
     <!--<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>-->
     <script>
 
-        let camera, scene, renderer, loader, clock;
+        var clock = new THREE.Clock();
+        var deltaTime = 0;
+        var totalTime = 0;
 
-        var deltaTime, totalTime;
+        let mainCamera, textureCamera, scene, renderer, loader;
+
+        // intermediate scene for reflecting the reflection
+        var screenScene, screenCamera, firstRenderTarget, finalRenderTarget;
 
         var arToolkitSource, arToolkitContext;
 
-        var markerRoot1;
+        var markerRoot1, pivotRoot;
 
-        var mesh1;
+        var video, videoImage, videoImageContext, videoTexture;
 
         initialize();
         animate();
@@ -32,33 +37,93 @@
         function initialize() {
 
             scene = new THREE.Scene();
-            let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
-            ambientLight.castShadow = true;
-            scene.add(ambientLight);
-            //var light = new THREE.AmbientLight(0xffffff);
-            //scene.add(light);
+
+            //Main camera
             camera = new THREE.Camera();
             scene.add(camera);
 
+            //Lights
+            let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+            ambientLight.castShadow = true;
+            scene.add(ambientLight);
+
+            //Renderer
             renderer = new THREE.WebGLRenderer({
                 antialias: true,
                 alpha: true
             });
-            renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-            renderer.setSize(640, 480);
+            renderer.setClearColor(0x000000, 0)
+            renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.domElement.style.position = 'absolute'
             renderer.domElement.style.top = '0px'
             renderer.domElement.style.left = '0px'
             document.body.appendChild(renderer.domElement);
 
-            clock = new THREE.Clock();
-            deltaTime = 0;
-            totalTime = 0;
+            arToolKitInit();
 
-            ////////////////////////////////////////////////////////////
+            // build markerControls
+            markerRoot1 = new THREE.Group();
+            markerRoot1.name = 'marker1';
+            scene.add(markerRoot1);
+            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+                type: 'nft',
+                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
+                smooth: true,
+            })
+
+            loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
+
+
+            pivotRoot = new THREE.Object3D();
+
+            //Video
+            video = document.createElement('video');
+            video.src = "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/Video/Test.avi";
+            video.load(); // must call after setting/changing source
+            //video.play();
+
+            videoImage = document.createElement('canvas');
+            //videoImage.width = 480;
+            //videoImage.height = 204;
+
+            videoImageContext = videoImage.getContext('2d');
+            // background color if no video present
+            videoImageContext.fillStyle = '#000000';
+            videoImageContext.fillRect(0, 0, videoImage.width, videoImage.height);
+
+            videoTexture = new THREE.Texture(videoImage);
+            videoTexture.minFilter = THREE.LinearFilter;
+            videoTexture.magFilter = THREE.LinearFilter;
+            videoTexture.format = THREE.RGBAFormat;
+
+
+            let material1 = new THREE.MeshBasicMaterial({ map: videoTexture, transparent: true });
+
+
+            let geometry1 = new THREE.PlaneGeometry(100, 100);
+            let mesh1 = new THREE.Mesh(geometry1, material1);
+            mesh1.position.set(77, 0, -55);
+            mesh1.rotation.x = -Math.PI / 2;
+            pivotRoot.add(mesh1);
+            markerRoot1.add(mesh1);
+
+            // the invisibility cloak (box with a hole)
+            let geometry0 = new THREE.BoxGeometry(16, 10, 14);
+            geometry0.faces.splice(4, 2); // make hole by removing top two triangles
+
+            let material0 = new THREE.MeshBasicMaterial({
+                colorWrite: false
+            });
+
+            let mesh0 = new THREE.Mesh(geometry0, material0);
+            mesh0.scale.set(8, 8, 8);
+            mesh0.position.set(77, -47, -55);
+            pivotRoot.add(mesh0);
+            markerRoot1.add(pivotRoot);
+        }
+
+        function arToolKitInit() {
             // setup arToolkitSource
-            ////////////////////////////////////////////////////////////
-
             arToolkitSource = new THREEx.ArToolkitSource({
                 sourceType: 'webcam',
             });
@@ -80,9 +145,7 @@
                 onResize()
             });
 
-            ////////////////////////////////////////////////////////////
             // setup arToolkitContext
-            ////////////////////////////////////////////////////////////
 
             // create atToolkitContext
             arToolkitContext = new THREEx.ArToolkitContext({
@@ -94,31 +157,17 @@
             arToolkitContext.init(function onCompleted() {
                 camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
             });
+        }
 
-            ////////////////////////////////////////////////////////////
-            // setup markerRoots
-            ////////////////////////////////////////////////////////////
+        function loadGLTF(url) {
 
-            // build markerControls
-            markerRoot1 = new THREE.Group();
-            markerRoot1.name = 'marker1';
-            scene.add(markerRoot1);
-            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-                type: 'nft',
-                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
-                smooth: true,
-                //changeMatrixMode: 'cameraTransformMatrix'
-            })
-
-
-            loader = new THREE.GLTFLoader().setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/');
-            loader.load('TestCubeCave3.gltf', function (gltf) {
+            loader = new THREE.GLTFLoader();//.setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/');
+            loader.load(url, function (gltf) {
                 var _root = gltf.scene.children[0];
 
                 _root.scale.set(5, 5, 5);
 
-                _root.children.forEach(element =>
-                {
+                _root.children.forEach(element => {
                     element.position.set(
                         element.position.x - 15,
                         element.position.y + 3,
@@ -126,37 +175,34 @@
                     );
 
                     element.castShadow = true;
-                });        
+                });
                 _root.rotation.x = Math.PI / 2;
                 _root.rotation.z = Math.PI;
                 markerRoot1.add(_root);
             });
-
-            // the invisibility cloak (box with a hole)
-            let geometry0 = new THREE.BoxGeometry(16, 10, 14);
-            geometry0.faces.splice(4, 2); // make hole by removing top two triangles
-
-            let material0 = new THREE.MeshBasicMaterial({
-                colorWrite: false
-            });
-
-            let mesh0 = new THREE.Mesh(geometry0, material0);
-            mesh0.scale.set(8, 8, 8);            
-            mesh0.position.set(77, -47, -55);
-            let cloakRoot = new THREE.Object3D();
-
-            cloakRoot.add(mesh0);
-            markerRoot1.add(cloakRoot);
         }
 
         function update() {
             // update artoolkit on every frame
-            if (arToolkitSource.ready !== false)
+            if (arToolkitSource.ready !== false) {
                 arToolkitContext.update(arToolkitSource.domElement);
+                video.play();
+            }
+            else
+            {
+                video.pause();
+                video.currentTime = 0;
+            }
         }
 
-
         function render() {
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                videoImageContext.drawImage(video, 0, 0);
+                if (videoTexture)
+                    videoTexture.needsUpdate = true;
+            }
+
             renderer.render(scene, camera);
         }
 
