@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>ARPostcardTest</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
@@ -18,6 +19,7 @@
         setTimeout(function () {
             window.scrollTo(0, 1);
         }, 10);
+
     });
 </script>
 
@@ -67,7 +69,7 @@
 
         var markerRoot1, pivotRoot;
 
-        var video, videoImage, videoImageContext, videoTexture;
+        var video;
 
         initialize();
         animate();
@@ -97,7 +99,36 @@
             renderer.domElement.style.left = '0px'
             document.body.appendChild(renderer.domElement);
 
-            arToolKitInit();
+            // setup arToolkitSource
+            arToolkitSource = new THREEx.ArToolkitSource({
+                sourceType: 'webcam',
+                sourceWidth: window.innerWidth,
+                sourceHeight: window.innerHeight,
+                displayWidth: window.innerWidth,
+                displayHeight: window.innerHeight
+            });
+
+            arToolkitSource.init(function onReady() {
+                onResize();
+            });
+
+            // handle resize event
+            window.addEventListener('resize', function () {
+                onResize();
+            });
+
+            // setup arToolkitContext
+
+            // create atToolkitContext
+            arToolkitContext = new THREEx.ArToolkitContext({
+                cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
+                detectionMode: 'mono'
+            });
+
+            // copy projection matrix to camera when initialization complete
+            arToolkitContext.init(function onCompleted() {
+                mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+            });
 
             // build markerControls
             markerRoot1 = new THREE.Group();
@@ -150,41 +181,14 @@
             markerRoot1.add(pivotRoot);
         }
 
-        function arToolKitInit() {
-            // setup arToolkitSource
-            arToolkitSource = new THREEx.ArToolkitSource({
-                sourceType: 'webcam',
-            });
 
-            function onResize() {
-                arToolkitSource.onResizeElement()
-                arToolkitSource.copyElementSizeTo(renderer.domElement)
-                if (arToolkitContext.arController !== null) {
-                    arToolkitSource.copySizeTo(arToolkitContext.arController.canvas)
-                }
+        function onResize() {
+            arToolkitSource.onResizeElement()
+            arToolkitSource.copyElementSizeTo(renderer.domElement)
+            if (arToolkitContext.arController !== null) {
+                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
             }
-
-            arToolkitSource.init(function onReady() {
-                onResize()
-            });
-
-            // handle resize event
-            window.addEventListener('resize', function () {
-                onResize()
-            });
-
-            // setup arToolkitContext
-
-            // create atToolkitContext
-            arToolkitContext = new THREEx.ArToolkitContext({
-                cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
-                detectionMode: 'mono'
-            });
-
-            // copy projection matrix to camera when initialization complete
-            arToolkitContext.init(function onCompleted() {
-                mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-            });
+            console.log("<<<<< Resize >>>>>");
         }
 
         function loadGLTF(url) {
