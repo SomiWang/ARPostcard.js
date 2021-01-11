@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Somi Hole Test</title>
+    <title>ARPostcardTest</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -10,8 +9,39 @@
     <script src='three.js/build/ar-nft.js'></script>
     <!-- Object3D.js -->
     <script type="module" src='https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/src/core/Object3D.js'></script>
-    
+
 </head>
+
+<script>
+    window.addEventListener("load", function () {
+
+        setTimeout(function () {
+            window.scrollTo(0, 1);
+        }, 10);
+    });
+</script>
+
+<style>
+    .arjs-loader {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .arjs-loader div {
+            text-align: center;
+            font-size: 1.25em;
+            color: white;
+        }
+</style>
+
 
 <video id="video" loop crossOrigin="anonymous" playsinline style="display:none">
     <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/webM/DogLayer.webm"
@@ -19,6 +49,11 @@
 </video>
 
 <body style="margin : 0px; overflow: hidden;">
+
+    <div class="arjs-loader">
+        <div>Loading, please wait...</div>
+    </div>
+
     <!--<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>-->
     <script>
 
@@ -26,10 +61,7 @@
         var deltaTime = 0;
         var totalTime = 0;
 
-        let mainCamera, textureCamera, scene, renderer, loader;
-
-        // intermediate scene for reflecting the reflection
-        var screenScene, screenCamera, firstRenderTarget, finalRenderTarget;
+        let mainCamera, scene, renderer, loader;
 
         var arToolkitSource, arToolkitContext;
 
@@ -45,8 +77,8 @@
             scene = new THREE.Scene();
 
             //Main camera
-            camera = new THREE.Camera();
-            scene.add(camera);
+            mainCamera = new THREE.Camera();
+            scene.add(mainCamera);
 
             //Lights
             let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
@@ -84,20 +116,8 @@
 
             //Video
             video = document.getElementById('video');
-            //video.src = "https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/webM/DogLayer.webm";
-
 
             video.load(); // must call after setting/changing source
-            //video.play();
-
-            //videoImage = document.createElement('canvas');
-            ////videoImage.width = 480;
-            ////videoImage.height = 204;
-
-            //videoImageContext = videoImage.getContext('2d');
-            //// background color if no video present
-            //videoImageContext.fillStyle = '#000000';
-            //videoImageContext.fillRect(0, 0, videoImage.width, videoImage.height);
 
             videoTexture = new THREE.VideoTexture(video);
             //videoTexture.minFilter = THREE.LinearFilter;
@@ -157,13 +177,13 @@
 
             // create atToolkitContext
             arToolkitContext = new THREEx.ArToolkitContext({
-                //cameraParametersUrl: 'data/camera_para.dat',
+                cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
                 detectionMode: 'mono'
             });
 
             // copy projection matrix to camera when initialization complete
             arToolkitContext.init(function onCompleted() {
-                camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+                mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
             });
         }
 
@@ -210,7 +230,7 @@
             //        videoTexture.needsUpdate = true;
             //}
 
-            renderer.render(scene, camera);
+            renderer.render(scene, mainCamera);
         }
 
 
