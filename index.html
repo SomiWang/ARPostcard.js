@@ -10,7 +10,13 @@
     <script src='three.js/build/ar-nft.js'></script>
     <!-- Object3D.js -->
     <script type="module" src='https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/src/core/Object3D.js'></script>
+    
 </head>
+
+<video id="video" loop crossOrigin="anonymous" playsinline style="display:none">
+    <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/webM/DogLayer.webm"
+            type='video/webm'>
+</video>
 
 <body style='position: absolute; top: 0; left: 0; width: 100%; height: 100%; margin : 0px; overflow: hidden;'>
     <!--<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>-->
@@ -77,8 +83,10 @@
             pivotRoot = new THREE.Object3D();
 
             //Video
-            video = document.createElement('video');
-            video.src = "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/webM/DogLayer.webm";
+            video = document.getElementById('video');
+            //video.src = "https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/webM/DogLayer.webm";
+
+
             video.load(); // must call after setting/changing source
             //video.play();
 
@@ -105,7 +113,7 @@
             mesh1.position.set(77, 0, -55);
             mesh1.rotation.x = -Math.PI / 2;
             pivotRoot.add(mesh1);
-            markerRoot1.add(mesh1);
+            //markerRoot1.add(mesh1);
 
             // the invisibility cloak (box with a hole)
             let geometry0 = new THREE.BoxGeometry(16, 10, 14);
@@ -178,7 +186,7 @@
                 });
                 _root.rotation.x = Math.PI / 2;
                 _root.rotation.z = Math.PI;
-                markerRoot1.add(_root);
+                //markerRoot1.add(_root);
             });
         }
 
