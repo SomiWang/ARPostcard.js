@@ -63,7 +63,7 @@
         var deltaTime = 0;
         var totalTime = 0;
 
-        let mainCamera, scene, renderer, loader;
+        let mainCamera, scene, renderer, loader, markerControls1;
 
         var arToolkitSource, arToolkitContext;
 
@@ -132,13 +132,14 @@
             markerRoot1 = new THREE.Group();
             markerRoot1.name = 'marker1';
             scene.add(markerRoot1);
-            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+            markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
                 type: 'nft',
                 descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
                 smooth: true,
+                smoothCount:15
             })
 
-            loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
+            //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
 
             pivotRoot = new THREE.Object3D();
 
@@ -156,7 +157,7 @@
             let material1 = new THREE.MeshBasicMaterial({ map: videoTexture, transparent: true });
 
 
-            let geometry1 = new THREE.PlaneGeometry(100, 100);
+            let geometry1 = new THREE.PlaneGeometry(155, 110);
             let mesh1 = new THREE.Mesh(geometry1, material1);
             mesh1.position.set(77, 0, -55);
             mesh1.rotation.x = -Math.PI / 2;
@@ -213,12 +214,15 @@
         function update() {
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
+                //markerControls1.smooth=true;
                 arToolkitContext.update(arToolkitSource.domElement);
                 video.play();
+
             }
             else {
                 video.pause();
                 video.currentTime = 0;
+                //markerControls1.smooth=false;
             }
         }
 
