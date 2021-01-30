@@ -22,6 +22,7 @@
 
     });
 </script>
+<script src="https://mevedia.com/share/gif.js"></script>
 
 <style>
     .arjs-loader {
@@ -45,11 +46,6 @@
 </style>
 
 
-<video id="video" loop crossOrigin="anonymous" playsinline style="display:none">
-    <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/webM/DogLayer.webm"
-            type='video/webm'>
-</video>
-
 <body style="margin : 0px; overflow: hidden;">
 
     <div class="arjs-loader">
@@ -59,11 +55,46 @@
     <!--<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>-->
     <script>
 
+        const fileLoader = new THREE.FileLoader;
+
+        const GIFLoader = (function (url, complete) {
+
+
+            fileLoader.responseType = 'arraybuffer';
+            fileLoader.load(url, async function (data) {
+
+                const gif = new GIF(data);
+
+                /* Container, frames can be from any source, their structure is:
+        
+                Either patch or image, if a arraybuffer is provided it will be converted to an Image
+                - patch (uncompressed Uint8Array)
+                - image (Image element)
+        
+                - dims (left, top, width, height)
+                - disposalType (number 0-3)
+                - delay (number ms)
+        
+                */
+
+
+                const container = {
+                    downscale: false,	// Canvas needs to be power of 2, by default size is upscaled (false)
+                    width: gif.raw.lsd.width,
+                    height: gif.raw.lsd.height,
+                    frames: gif.decompressFrames(true)
+                };
+
+                complete(container);
+
+            });
+        });
+
         var clock = new THREE.Clock();
         var deltaTime = 0;
         var totalTime = 0;
 
-        let mainCamera, scene, renderer, loader, markerControls1;
+        let mainCamera, scene, renderer, loader;
 
         var arToolkitSource, arToolkitContext;
 
@@ -132,38 +163,36 @@
             markerRoot1 = new THREE.Group();
             markerRoot1.name = 'marker1';
             scene.add(markerRoot1);
-            markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
                 type: 'nft',
                 descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
                 smooth: true,
-                smoothCount:15
             })
 
             //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
-
+                
             pivotRoot = new THREE.Object3D();
 
-            //Video
-            video = document.getElementById('video');
+            //Gif loader
+            GIFLoader('data/data/gif/DogLayer.gif', async function (container) {
 
-            video.load(); // must call after setting/changing source
+                const ratio = container.width / container.height;
+                var gifTex = new THREE.ComposedTexture(container);
 
-            videoTexture = new THREE.VideoTexture(video);
-            //videoTexture.minFilter = THREE.LinearFilter;
-            //videoTexture.magFilter = THREE.LinearFilter;
-            videoTexture.format = THREE.RGBAFormat;
+                let material1 = new THREE.MeshBasicMaterial({
+                    map: gifTex,
+                    transparent: true,
+                    side: THREE.DoubleSide,
+                });
 
-
-            let material1 = new THREE.MeshBasicMaterial({ map: videoTexture, transparent: true });
-
-
-            let geometry1 = new THREE.PlaneGeometry(155, 110);
-            let mesh1 = new THREE.Mesh(geometry1, material1);
-            mesh1.position.set(77, 0, -55);
-            mesh1.rotation.x = -Math.PI / 2;
-            pivotRoot.add(mesh1);
-            //markerRoot1.add(mesh1);
-
+                let geometry1 = new THREE.PlaneGeometry(155, 110);
+                let mesh1 = new THREE.Mesh(geometry1, material1);
+                mesh1.position.set(77, 0, -55);
+                //mesh1.rotation.z = Math.PI / 2;
+                pivotRoot.add(mesh1);
+                //markerRoot1.add(mesh1);
+            });
+                   
             // the invisibility cloak (box with a hole)
             let geometry0 = new THREE.BoxGeometry(16, 10, 14);
             geometry0.faces.splice(4, 2); // make hole by removing top two triangles
@@ -214,15 +243,12 @@
         function update() {
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
-                //markerControls1.smooth=true;
                 arToolkitContext.update(arToolkitSource.domElement);
                 video.play();
-
             }
             else {
                 video.pause();
                 video.currentTime = 0;
-                //markerControls1.smooth=false;
             }
         }
 
@@ -233,6 +259,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
+            THREE.ComposedTexture.update(clock.getDelta());
             deltaTime = clock.getDelta();
             totalTime += deltaTime;
             update();
