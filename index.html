@@ -244,11 +244,6 @@
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
                 arToolkitContext.update(arToolkitSource.domElement);
-                video.play();
-            }
-            else {
-                video.pause();
-                video.currentTime = 0;
             }
         }
 
