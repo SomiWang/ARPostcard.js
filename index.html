@@ -235,12 +235,12 @@
                 const ratio = container.width / container.height;
                 var gifTex = new THREE.ComposedTexture(container);
                 AddToPivotRoot(gifTex, depth);
-                currentIndex++;
-                if (currentIndex < gifs.length) {
-                    setTimeout(function () {
-                        LoadGIFs()
-                    }, 1000);
-                }
+                //currentIndex++;
+                //if (currentIndex < gifs.length) {
+                //    setTimeout(function () {
+                //        LoadGIFs()
+                //    }, 1000);
+                //}
             });
         }
 
