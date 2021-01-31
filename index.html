@@ -56,6 +56,7 @@
     <script>
 
         const fileLoader = new THREE.FileLoader;
+        const textureLoader = new THREE.TextureLoader;
 
         const GIFLoader = (function (url, complete) {
 
@@ -66,15 +67,15 @@
                 const gif = new GIF(data);
 
                 /* Container, frames can be from any source, their structure is:
-        
+
                 Either patch or image, if a arraybuffer is provided it will be converted to an Image
                 - patch (uncompressed Uint8Array)
                 - image (Image element)
-        
+
                 - dims (left, top, width, height)
                 - disposalType (number 0-3)
                 - delay (number ms)
-        
+
                 */
 
 
@@ -144,7 +145,7 @@
             // handle resize event
             window.addEventListener('resize', function () {
                 onResize();
-            });                      
+            });
 
             // setup arToolkitContext
 
@@ -170,29 +171,18 @@
             })
 
             //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
-                
+
             pivotRoot = new THREE.Object3D();
 
             //Gif loader
-            GIFLoader('data/data/gif/DogLayer.gif', async function (container) {
+            LoadGIF('data/Layers/Layer01.gif', 0);
+            LoadGIF('data/Layers/Layer02.gif', -1);
+            LoadGIF('data/Layers/Layer03.gif', -2);
+            LoadGIF('data/Layers/Layer04.gif', -3);
+            LoadTexture('data/Layers/Layer05.gif', -4);
+            LoadTexture('data/Layers/Layer06.gif', -5);
+            LoadGIF('data/Layers/Layer07.gif', -6);
 
-                const ratio = container.width / container.height;
-                var gifTex = new THREE.ComposedTexture(container);
-
-                let material1 = new THREE.MeshBasicMaterial({
-                    map: gifTex,
-                    transparent: true,
-                    side: THREE.DoubleSide,
-                });
-
-                let geometry1 = new THREE.PlaneGeometry(155, 110);
-                let mesh1 = new THREE.Mesh(geometry1, material1);
-                mesh1.position.set(77, 0, -55);
-                //mesh1.rotation.z = Math.PI / 2;
-                pivotRoot.add(mesh1);
-                //markerRoot1.add(mesh1);
-            });
-                   
             // the invisibility cloak (box with a hole)
             let geometry0 = new THREE.BoxGeometry(16, 10, 14);
             geometry0.faces.splice(4, 2); // make hole by removing top two triangles
@@ -217,7 +207,7 @@
             }
         }
 
-        function loadGLTF(url) {
+        function loadGLTF(url,depth) {
 
             loader = new THREE.GLTFLoader();//.setPath('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/');
             loader.load(url, function (gltf) {
@@ -237,6 +227,43 @@
                 _root.rotation.x = Math.PI / 2;
                 _root.rotation.z = Math.PI;
                 markerRoot1.add(_root);
+            });
+        }
+
+        function LoadTexture(url, depth) {
+
+            var tex = textureLoader.load(url);
+            let material = new THREE.MeshBasicMaterial({
+                map: tex,
+                transparent: true,
+                side: THREE.DoubleSide,
+            });
+
+            let geometry = new THREE.PlaneGeometry(155, 110);
+            let mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(77, depth, -55);
+            mesh.rotation.x = Math.PI / 2;
+            pivotRoot.add(mesh);
+        }
+
+        function LoadGIF(url, depth) {
+
+            GIFLoader(url, async function (container) {
+
+                const ratio = container.width / container.height;
+                var gifTex = new THREE.ComposedTexture(container);
+
+                let material1 = new THREE.MeshBasicMaterial({
+                    map: gifTex,
+                    transparent: true,
+                    side: THREE.DoubleSide,
+                });
+
+                let geometry1 = new THREE.PlaneGeometry(155, 110);
+                let mesh1 = new THREE.Mesh(geometry1, material1);
+                mesh1.position.set(77, depth, -55);
+                mesh1.rotation.x = Math.PI / 2;
+                pivotRoot.add(mesh1);
             });
         }
 
