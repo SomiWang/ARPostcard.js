@@ -241,7 +241,7 @@
 
             let geometry = new THREE.PlaneGeometry(155, 110);
             let mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(77, depth, -55);
+            mesh.position.set(77, depth*10, -55);
             mesh.rotation.x = Math.PI / 2;
             pivotRoot.add(mesh);
         }
@@ -261,7 +261,7 @@
 
                 let geometry1 = new THREE.PlaneGeometry(155, 110);
                 let mesh1 = new THREE.Mesh(geometry1, material1);
-                mesh1.position.set(77, depth, -55);
+                mesh1.position.set(77, depth*10, -55);
                 mesh1.rotation.x = Math.PI / 2;
                 pivotRoot.add(mesh1);
             });
