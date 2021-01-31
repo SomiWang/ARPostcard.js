@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>ARPostcardTest 1.0</title>
+    <title>ARPostcard1.1</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -176,7 +176,7 @@
                 descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
                 smooth: true,
                 smoothCount: 30
-            })
+            });
 
             //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
 
@@ -236,7 +236,11 @@
                 var gifTex = new THREE.ComposedTexture(container);
                 AddToPivotRoot(gifTex, depth);
                 currentIndex++;
-                if (currentIndex < gifs.length) LoadGIFs();
+                if (currentIndex < gifs.length) {
+                    setTimeout(function () {
+                        LoadGIFs()
+                    }, 1000);
+                }
             });
         }
 
@@ -268,7 +272,6 @@
         function render() {
             renderer.render(scene, mainCamera);
         }
-
 
         function animate() {
             requestAnimationFrame(animate);
