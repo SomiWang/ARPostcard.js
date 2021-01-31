@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>ARPostcard1.1</title>
+    <title>ARPostcard1.2</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -183,10 +183,10 @@
             pivotRoot = new THREE.Object3D();
 
             //Gif loader
-            LoadGIFs();
+            //LoadGIFs();
 
-            //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer01.gif', 0);
-            //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer02.gif', -1);
+            LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer01.gif', 0);
+            LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer02.gif', -1);
             //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer03.gif', -2);
             //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer04.gif', -3);
             LoadTexture('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer05.png', -4);
