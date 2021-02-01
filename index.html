@@ -104,6 +104,12 @@
         var isInit = false;
         var orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
 
+        if (!isInit && (orientation.type === "landscape-primary" || orientation.type === "landscape-secondary")) {
+            window.scrollTo(0, 1);
+            initialize();
+            animate();
+            isInit = true;
+        }
 
         window.addEventListener("orientationchange", function () {
 
@@ -113,6 +119,7 @@
                 if (!isInit) {
                     initialize();
                     animate();
+                    isInit = true;
                 }
             }
             else if (orientation.type === "portrait-secondary" || orientation.type === "portrait-primary") {
@@ -121,12 +128,6 @@
             }
 
         });
-
-        if (!isInit && (orientation.type === "landscape-primary" || orientation.type === "landscape-secondary")) {
-            window.scrollTo(0, 1);
-            initialize();
-            animate();
-        }
 
         function initialize() {
 
