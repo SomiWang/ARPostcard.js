@@ -112,12 +112,16 @@
             'Layer04.gif',
             'Layer07.gif']
         var currentIndex = 0;
+        var windowWidth;
 
         initialize();
         animate();
 
 
         function initialize() {
+
+            windowWidth = window.innerWidth;
+
 
             scene = new THREE.Scene();
 
@@ -167,7 +171,7 @@
 
             // create atToolkitContext
             arToolkitContext = new THREEx.ArToolkitContext({
-                //cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
+                cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
                 detectionMode: 'mono'
             });
 
@@ -223,10 +227,10 @@
 
         function onResize() {
             renderer.setSize(window.innerWidth, window.innerHeight);
-            arToolkitSource.onResizeElement()
-            arToolkitSource.copyElementSizeTo(renderer.domElement)
+            arToolkitSource.onResizeElement();
+            arToolkitSource.copyElementSizeTo(renderer.domElement);
             if (arToolkitContext.arController !== null) {
-                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
+                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
             }
         }
 
@@ -298,6 +302,8 @@
         function update() {
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
+
+                if (window.width !== windowWidth) onResize();
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
