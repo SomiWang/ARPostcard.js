@@ -23,12 +23,11 @@ var Db=[AP,pr,sr,Cr];var Eb=[BP,ss];var Fb=[CP,lr];var Gb=[DP,pj,kx,rx,_A,ND,OD,
 
 var THREEx = THREEx || {}
 
-THREEx.ChromaKeyMaterial = function (url, keyColor) {
+THREEx.ChromaKeyMaterial = function (video, keyColor) {
 	THREE.ShaderMaterial.call(this);
 
-	video = document.createElement('video');
-	video.src = url;
-	video.load();
+	//video = document.getElementById(id);
+	//video.load();
 
 	var keyColorObject = new THREE.Color(keyColor);
 
@@ -36,14 +35,14 @@ THREEx.ChromaKeyMaterial = function (url, keyColor) {
 	videoTexture.minFilter = THREE.LinearFilter;
 	videoTexture.magFilter = THREE.LinearFilter;
 
-	this.startVideo = function () {
-		video.play();
-	};
+	//this.startVideo = function () {
+	//	video.play();
+	//};
 
-	this.stopVideo = function () {
-		video.pause();
-		video.src = "";
-	};
+	//this.stopVideo = function () {
+	//	video.pause();
+	//	// video.src = "";
+	//};
 
 	this.update = function () {
 		if (video.readyState === video.HAVE_ENOUGH_DATA) {

@@ -10,10 +10,13 @@
     <script src='three.js/build/ar-nft.js'></script>
     <!-- Object3D.js -->
     <script type="module" src='https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/src/core/Object3D.js'></script>
-    //<script type="module" src='https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/src/threex/threex-chromakey.js'></script>
     <script src='three.js/ComposedTexture.js/ComposedTexture.js'></script>
     <script src="https://mevedia.com/share/gif.js"></script>
 </head>
+
+<video id="dogLayer" loop crossOrigin="anonymous" playsinline style="display:none" autoplay muted>
+    <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/mp4/movie.mp4">
+</video>
 
 
 
@@ -253,10 +256,21 @@
         }
 
         function AddMp4(id) {
-            var material = new THREEx.ChromaKeyMaterial('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/mp4/movie.mp4', 0xd432);
+
+            var video = document.getElementById(id);
+            video.load();
+            video.play();
+            var videoTex = new THREE.VideoTexture(vide);
+            var material = new THREE.MeshBasicMaterial({
+                map: videoTex,
+                //transparent: true,
+                //side: THREE.DoubleSide,
+            });
+            //var material = new THREEx.ChromaKeyMaterial(video, 0xd432);
+            //material.startVideo();
             let geometry = new THREE.PlaneBufferGeometry(155, 110);
             let mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(77, depth * 10, -55);
+            mesh.position.set(77, 0 * 10, -55);
             mesh.rotation.x = -Math.PI / 2;
             pivotRoot.add(mesh);
         }
