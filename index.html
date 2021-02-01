@@ -231,6 +231,7 @@
             if (arToolkitContext.arController !== null) {
                 arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
             }
+            mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
         }
 
         function LoadTexture(url, depth) {
@@ -300,9 +301,8 @@
 
         function update() {
             // update artoolkit on every frame
+            if (window.innerWidth > windowWidth * 1.2 || window.innerWidth * 1.2 < windowWidth) onResize();
             if (arToolkitSource.ready !== false) {
-
-                if (window.innerWidth > windowWidth * 1.2 || window.innerWidth * 1.2 < windowWidth) onResize();
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
