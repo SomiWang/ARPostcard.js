@@ -225,13 +225,13 @@
 
         function onResize() {
             windowWidth = window.innerWidth;
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            //renderer.setSize(window.innerWidth, window.innerHeight);
             arToolkitSource.onResizeElement();
             arToolkitSource.copyElementSizeTo(renderer.domElement);
             if (arToolkitContext.arController !== null) {
                 arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
             }
-            mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+            //mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
         }
 
         function LoadTexture(url, depth) {
