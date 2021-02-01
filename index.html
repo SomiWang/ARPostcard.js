@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>ARPostcard 2.2</title>
+    <title>ARPostcard 2.3</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -105,6 +105,7 @@
         var arToolkitSource, arToolkitContext;
 
         var markerRoot1, pivotRoot;
+        var PlaneMesh;
 
         var folder = 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/';
         var gifs = ['Layer01.gif',
@@ -190,7 +191,7 @@
 
             //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
 
-            pivotRoot = new THREE.Object3D();
+            pivotRoot = new THREE.Group();
 
             //Gif loader
             //LoadGIFs();
@@ -270,7 +271,7 @@
             });
             //var material = new THREEx.ChromaKeyMaterial(video, 0xd432);
             //material.startVideo();
-            let geometry = new THREE.PlaneBufferGeometry(155, 110);
+            let geometry = new THREE.PlaneGeometry(155, 110);
             let mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(77, 0 * 10, -55);
             mesh.rotation.x = -Math.PI / 2;
@@ -308,7 +309,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            THREE.ComposedTexture.update(clock.getDelta());
+            //THREE.ComposedTexture.update(clock.getDelta());
             deltaTime = clock.getDelta();
             totalTime += deltaTime;
             update();
