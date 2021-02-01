@@ -328,7 +328,7 @@
                 isInit = true;
             }
 
-            if (arTookkitSource !== null && arToolkitSource.ready !== false) {
+            if (isInit && arToolkitSource.ready !== false) {
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
