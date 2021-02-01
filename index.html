@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta  charset="utf-8">
-    <title>ARPostcard 2.39</title>
+    <meta charset="utf-8">
+    <title>ARPostcard 2.4</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- ar.js -->
@@ -38,11 +38,11 @@
         align-items: center;
     }
 
-    .arjs-loader div {
-        text-align: center;
-        font-size: 1.25em;
-        color: white;
-     }
+        .arjs-loader div {
+            text-align: center;
+            font-size: 1.25em;
+            color: white;
+        }
 </style>
 
 
@@ -218,6 +218,7 @@
         }
 
         function onResize() {
+            windowWidth = window.innerWidth;
             renderer.setSize(window.innerWidth, window.innerHeight);
             arToolkitSource.onResizeElement();
             arToolkitSource.copyElementSizeTo(renderer.domElement);
@@ -295,7 +296,7 @@
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
 
-                //if (window.width !== windowWidth) onResize();
+                if (window.innerWidth !== windowWidth) onResize();
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
