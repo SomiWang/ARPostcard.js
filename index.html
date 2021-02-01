@@ -133,7 +133,7 @@
                 //logarithmicDepthBuffer: true
             });
             //renderer.setClearColor(0x000000, 0)
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            //renderer.setSize(window.innerWidth, window.innerHeight);
             //renderer.domElement.style.position = 'absolute'
             //renderer.domElement.style.top = '0px'
             //renderer.domElement.style.left = '0px'
@@ -295,7 +295,7 @@
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
 
-                if (window.width !== windowWidth) onResize();
+                //if (window.width !== windowWidth) onResize();
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
