@@ -186,7 +186,7 @@
                 type: 'nft',
                 descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
                 smooth: true,
-                smoothCount: 30
+                smoothCount: 20
             });
 
             //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
@@ -208,19 +208,19 @@
             AddMp4("dogLayer");
 
             // the invisibility cloak (box with a hole)
-            let geometry0 = new THREE.BoxGeometry(16, 10, 14);
-            geometry0.faces.splice(4, 2); // make hole by removing top two triangles
+            //let geometry0 = new THREE.BoxGeometry(16, 10, 14);
+            //geometry0.faces.splice(4, 2); // make hole by removing top two triangles
 
-            let material0 = new THREE.MeshBasicMaterial({
-                colorWrite: false,
-            });
+            //let material0 = new THREE.MeshBasicMaterial({
+            //    colorWrite: false,
+            //});
 
-            let mesh0 = new THREE.Mesh(geometry0, material0);
-            mesh0.scale.set(8, 8, 8);
-            mesh0.position.set(77, -47, -55);
-            pivotRoot.add(mesh0);
+            //let mesh0 = new THREE.Mesh(geometry0, material0);
+            //mesh0.scale.set(8, 8, 8);
+            //mesh0.position.set(77, -47, -55);
+            //pivotRoot.add(mesh0);
 
-            markerRoot1.add(pivotRoot);
+            //markerRoot1.add(pivotRoot);
         }
 
         function onResize() {
@@ -228,6 +228,7 @@
             arToolkitSource.copyElementSizeTo(renderer.domElement)
             if (arToolkitContext.arController !== null) {
                 arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
+                mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
             }
         }
 
