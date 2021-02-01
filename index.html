@@ -105,10 +105,11 @@
         var isInit = false;
         var orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
 
-        if (!isInit && (orientation.type === "landscape-primary" || orientation.type === "landscape-secondary")) {
+        animate();
+
+        if (!isInit && window.innerWidth > window.innerHeight) /*&& (orientation.type === "landscape-primary" || orientation.type === "landscape-secondary"))*/ {
             window.scrollTo(0, 1);
             initialize();
-            animate();
             isInit = true;
         }
 
@@ -119,7 +120,6 @@
                 window.scrollTo(0, 1);
                 if (!isInit) {
                     initialize();
-                    animate();
                     isInit = true;
                 }
             }
@@ -127,7 +127,6 @@
                 console.log("Mmmh... you should rotate your device to landscape");
                 window.scrollTo(0, 0);
             }
-
         });
 
         function initialize() {
@@ -320,14 +319,22 @@
 
         function update() {
             // update artoolkit on every frame
-            if (window.innerWidth > windowWidth * 1.2 || window.innerWidth * 1.2 < windowWidth) onResize();
-            if (arToolkitSource.ready !== false) {
+            if (window.innerHeight > window.innerWidth) {
+                window.scrollTo(0, 0);
+            }
+            else if (!isInit) {
+                window.scrollTo(0, 1);
+                initialize();
+                isInit = true;
+            }
+
+            if (arTookkitSource !== null && arToolkitSource.ready !== false) {
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
 
         function render() {
-            renderer.render(scene, mainCamera);
+            if (renderer !== null) renderer.render(scene, mainCamera);
         }
 
         function animate() {
