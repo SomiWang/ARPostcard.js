@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>ARPostcard 2.31</title>
+    <title>ARPostcard 2.34</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -229,7 +229,8 @@
             if (arToolkitContext.arController !== null) {
                 arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
             }
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            //renderer.setSize(window.innerWidth, window.innerHeight);
+            //mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
         }
 
         function LoadTexture(url, depth) {
