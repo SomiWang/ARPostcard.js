@@ -13,6 +13,11 @@
     <script src='three.js/ComposedTexture.js/ComposedTexture.js'></script>
 </head>
 
+<video id="dogLayer" loop crossOrigin="anonymous" playsinline style="display:none">
+    <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/map4/movie.mp4">
+</video>
+
+
 <script>
     window.addEventListener("load", function () {
 
@@ -23,7 +28,7 @@
     });
 </script>
 <script src="https://mevedia.com/share/gif.js"></script>
-
+<script src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/Threex_chromakey/threex.chromakey.js"></script>
 <style>
     .arjs-loader {
         height: 100%;
@@ -53,236 +58,251 @@
     </div>
 
     <!--<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>-->
-    <script>
+<script>
 
-        const fileLoader = new THREE.FileLoader;
-        const textureLoader = new THREE.TextureLoader;
+    const fileLoader = new THREE.FileLoader;
+    const textureLoader = new THREE.TextureLoader;
 
-        const GIFLoader = (function (url, complete) {
-
-
-            fileLoader.responseType = 'arraybuffer';
-            fileLoader.load(url, async function (data) {
-
-                const gif = new GIF(data);
-
-                /* Container, frames can be from any source, their structure is:
-
-                Either patch or image, if a arraybuffer is provided it will be converted to an Image
-                - patch (uncompressed Uint8Array)
-                - image (Image element)
-
-                - dims (left, top, width, height)
-                - disposalType (number 0-3)
-                - delay (number ms)
-
-                */
+    const GIFLoader = (function (url, complete) {
 
 
-                const container = {
-                    downscale: false,	// Canvas needs to be power of 2, by default size is upscaled (false)
-                    width: gif.raw.lsd.width,
-                    height: gif.raw.lsd.height,
-                    frames: gif.decompressFrames(true)
-                };
+        fileLoader.responseType = 'arraybuffer';
+        fileLoader.load(url, async function (data) {
 
-                complete(container);
-            });
+            const gif = new GIF(data);
+
+            /* Container, frames can be from any source, their structure is:
+
+            Either patch or image, if a arraybuffer is provided it will be converted to an Image
+            - patch (uncompressed Uint8Array)
+            - image (Image element)
+
+            - dims (left, top, width, height)
+            - disposalType (number 0-3)
+            - delay (number ms)
+
+            */
+
+
+            const container = {
+                downscale: false,	// Canvas needs to be power of 2, by default size is upscaled (false)
+                width: gif.raw.lsd.width,
+                height: gif.raw.lsd.height,
+                frames: gif.decompressFrames(true)
+            };
+
+            complete(container);
+        });
+    });
+
+    var clock = new THREE.Clock();
+    var deltaTime = 0;
+    var totalTime = 0;
+
+    let mainCamera, scene, renderer, loader;
+
+    var arToolkitSource, arToolkitContext;
+
+    var markerRoot1, pivotRoot;
+
+    var folder = 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/';
+    var gifs = ['Layer01.gif',
+        'Layer02.gif',
+        'Layer03.gif',
+        'Layer04.gif',
+        'Layer07.gif']
+    var currentIndex = 0;
+
+    initialize();
+    animate();
+
+
+    function initialize() {
+
+        scene = new THREE.Scene();
+
+        //Main camera
+        mainCamera = new THREE.Camera();
+        scene.add(mainCamera);
+
+        //Lights
+        let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+        ambientLight.castShadow = true;
+        scene.add(ambientLight);
+
+        //Renderer
+        renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true,
+            logarithmicDepthBuffer: true
+        });
+        renderer.setClearColor(0x000000, 0)
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.domElement.style.position = 'absolute'
+        renderer.domElement.style.top = '0px'
+        renderer.domElement.style.left = '0px'
+        document.body.appendChild(renderer.domElement);
+
+        // setup arToolkitSource
+        arToolkitSource = new THREEx.ArToolkitSource({
+            sourceType: 'webcam',
         });
 
-        var clock = new THREE.Clock();
-        var deltaTime = 0;
-        var totalTime = 0;
+        arToolkitSource.init(function onReady() {
+            setTimeout(function () {
+                onResize()
+            }, 1000);
+        });
 
-        let mainCamera, scene, renderer, loader;
+        // handle resize event
+        window.addEventListener('resize', function () {
+            onResize();
+        });
 
-        var arToolkitSource, arToolkitContext;
+        // setup arToolkitContext
 
-        var markerRoot1, pivotRoot;
+        // create atToolkitContext
+        arToolkitContext = new THREEx.ArToolkitContext({
+            //cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
+            detectionMode: 'mono'
+        });
 
-        var folder = 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/';
-        var gifs = ['Layer01.gif',
-            'Layer02.gif',
-            'Layer03.gif',
-            'Layer04.gif',
-            'Layer07.gif']
-        var currentIndex = 0;
+        // copy projection matrix to camera when initialization compilete
+        arToolkitContext.init(function onCompleted() {
+            mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        });
 
-        initialize();
-        animate();
+        // build markerControls
+        markerRoot1 = new THREE.Group();
+        markerRoot1.name = 'marker1';
+        scene.add(markerRoot1);
+        let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
+            type: 'nft',
+            descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
+            smooth: true,
+            smoothCount: 30
+        });
+
+        //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
+
+        pivotRoot = new THREE.Object3D();
+
+        //Gif loader
+        //LoadGIFs();
+
+        //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer01.gif', 0);
+        //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer02.gif', -1);
+        //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer03.gif', -2);
+        //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer04.gif', -3);
+        //LoadTexture('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer05.png', -4);
+        //LoadTexture('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer06.png', -5);
+        //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer07.gif', -6);
 
 
-        function initialize() {
+  
 
-            scene = new THREE.Scene();
 
-            //Main camera
-            mainCamera = new THREE.Camera();
-            scene.add(mainCamera);
 
-            //Lights
-            let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
-            ambientLight.castShadow = true;
-            scene.add(ambientLight);
+        // the invisibility cloak (box with a hole)
+        let geometry0 = new THREE.BoxGeometry(16, 10, 14);
+        geometry0.faces.splice(4, 2); // make hole by removing top two triangles
 
-            //Renderer
-            renderer = new THREE.WebGLRenderer({
-                antialias: true,
-                alpha: true,
-                logarithmicDepthBuffer: true
-            });
-            renderer.setClearColor(0x000000, 0)
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.domElement.style.position = 'absolute'
-            renderer.domElement.style.top = '0px'
-            renderer.domElement.style.left = '0px'
-            document.body.appendChild(renderer.domElement);
+        let material0 = new THREE.MeshBasicMaterial({
+            colorWrite: false,
+        });
 
-            // setup arToolkitSource
-            arToolkitSource = new THREEx.ArToolkitSource({
-                sourceType: 'webcam',
-            });
+        let mesh0 = new THREE.Mesh(geometry0, material0);
+        mesh0.scale.set(8, 8, 8);
+        mesh0.position.set(77, -47, -55);
+        pivotRoot.add(mesh0);
 
-            arToolkitSource.init(function onReady() {
-                setTimeout(function () {
-                    onResize()
-                }, 1000);
-            });
+        markerRoot1.add(pivotRoot);
+    }
 
-            // handle resize event
-            window.addEventListener('resize', function () {
-                onResize();
-            });
-
-            // setup arToolkitContext
-
-            // create atToolkitContext
-            arToolkitContext = new THREEx.ArToolkitContext({
-                //cameraParametersUrl: "https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/data/camera_para.dat",
-                detectionMode: 'mono'
-            });
-
-            // copy projection matrix to camera when initialization compilete
-            arToolkitContext.init(function onCompleted() {
-                mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-            });
-
-            // build markerControls
-            markerRoot1 = new THREE.Group();
-            markerRoot1.name = 'marker1';
-            scene.add(markerRoot1);
-            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-                type: 'nft',
-                descriptorsUrl: 'https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/dataNFT/Postcard/Postcard',
-                smooth: true,
-                smoothCount: 30
-            });
-
-            //loadGLTF("https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/examples/resources/TestCubeCave3/TestCubeCave3.gltf");
-
-            pivotRoot = new THREE.Object3D();
-
-            //Gif loader
-            //LoadGIFs();
-
-            LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer01.gif', 0);
-            //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer02.gif', -1);
-            //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer03.gif', -2);
-            //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer04.gif', -3);
-            //LoadTexture('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer05.png', -4);
-            //LoadTexture('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer06.png', -5);
-            //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer07.gif', -6);
-
-            // the invisibility cloak (box with a hole)
-            let geometry0 = new THREE.BoxGeometry(16, 10, 14);
-            geometry0.faces.splice(4, 2); // make hole by removing top two triangles
-
-            let material0 = new THREE.MeshBasicMaterial({
-                colorWrite: false,
-            });
-
-            let mesh0 = new THREE.Mesh(geometry0, material0);
-            mesh0.scale.set(8, 8, 8);
-            mesh0.position.set(77, -47, -55);
-            pivotRoot.add(mesh0);
-
-            markerRoot1.add(pivotRoot);
+    function onResize() {
+        arToolkitSource.onResizeElement()
+        arToolkitSource.copyElementSizeTo(renderer.domElement)
+        if (arToolkitContext.arController !== null) {
+            arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
         }
+    }
 
-        function onResize() {
-            arToolkitSource.onResizeElement()
-            arToolkitSource.copyElementSizeTo(renderer.domElement)
-            if (arToolkitContext.arController !== null) {
-                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
-            }
+    function LoadTexture(url, depth) {
+
+        var tex = textureLoader.load(url);
+        AddToPivotRoot(tex, depth);
+    }
+
+    function LoadGIFs() {
+        var depth = currentIndex * -1;
+        if (currentIndex === gifs.length - 1) depth = -6;
+        LoadGIF(folder + gifs[currentIndex], depth);
+    }
+
+    function LoadGIF(url, depth) {
+
+        GIFLoader(url, async function (container) {
+            const ratio = container.width / container.height;
+            var gifTex = new THREE.ComposedTexture(container);
+            AddToPivotRoot(gifTex, depth);
+            //currentIndex++;
+            //if (currentIndex < gifs.length) {
+            //    setTimeout(function () {
+            //        LoadGIFs()
+            //    }, 1000);
+            //}
+        });
+    }
+
+    function AddMp4(id) {
+
+        var mp4 = document.getElementById(id);
+        var material = new THREEx.ChromaKeyMaterial(mp4, 00FF10);
+        let geometry = new THREE.PlaneGeometry(155, 110);
+        let mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(77, depth * 10, -55);
+        mesh.rotation.x = -Math.PI / 2;
+    }
+
+    function AddToPivotRoot(tex, depth) {
+
+        let material = new THREE.MeshBasicMaterial({
+            map: tex,
+            transparent: true,
+            side: THREE.DoubleSide,
+            //depth: THREE.GreaterDepth
+            //blending: THREE.NoBlending
+        });
+
+        let geometry = new THREE.PlaneGeometry(155, 110);
+        let mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(77, depth * 10, -55);
+        mesh.rotation.x = -Math.PI / 2;
+        pivotRoot.add(mesh);
+    }
+
+
+    function update() {
+        // update artoolkit on every frame
+        if (arToolkitSource.ready !== false) {
+            arToolkitContext.update(arToolkitSource.domElement);
         }
+    }
 
-        function LoadTexture(url, depth) {
+    function render() {
+        renderer.render(scene, mainCamera);
+    }
 
-            var tex = textureLoader.load(url);
-            AddToPivotRoot(tex, depth);
-        }
+    function animate() {
+        requestAnimationFrame(animate);
+        THREE.ComposedTexture.update(clock.getDelta());
+        deltaTime = clock.getDelta();
+        totalTime += deltaTime;
+        update();
+        render();
+    }
 
-        function LoadGIFs() {
-            var depth = currentIndex * -1;
-            if (currentIndex === gifs.length - 1) depth = -6;
-            LoadGIF(folder + gifs[currentIndex], depth);
-        }
-
-        function LoadGIF(url, depth) {
-
-            GIFLoader(url, async function (container) {
-                const ratio = container.width / container.height;
-                var gifTex = new THREE.ComposedTexture(container);
-                AddToPivotRoot(gifTex, depth);
-                //currentIndex++;
-                //if (currentIndex < gifs.length) {
-                //    setTimeout(function () {
-                //        LoadGIFs()
-                //    }, 1000);
-                //}
-            });
-        }
-
-        function AddToPivotRoot(tex, depth) {
-
-            let material = new THREE.MeshBasicMaterial({
-                map: tex,
-                transparent: true,
-                side: THREE.DoubleSide,
-                //depth: THREE.GreaterDepth
-                //blending: THREE.NoBlending
-            });
-
-            let geometry = new THREE.PlaneGeometry(155, 110);
-            let mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(77, depth * 10, -55);
-            mesh.rotation.x = -Math.PI / 2;
-            pivotRoot.add(mesh);
-        }
-
-
-        function update() {
-            // update artoolkit on every frame
-            if (arToolkitSource.ready !== false) {
-                arToolkitContext.update(arToolkitSource.domElement);
-            }
-        }
-
-        function render() {
-            renderer.render(scene, mainCamera);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            THREE.ComposedTexture.update(clock.getDelta());
-            deltaTime = clock.getDelta();
-            totalTime += deltaTime;
-            update();
-            render();
-        }
-
-    </script>
+</script>
 
 </body>
     </html>
