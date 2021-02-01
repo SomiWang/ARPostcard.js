@@ -15,13 +15,7 @@
 
 
 <script>
-    window.addEventListener("load", function () {
 
-        setTimeout(function () {
-            //window.scrollTo(0, 1);
-        }, 10);
-
-    });
 </script>
 
 <style>
@@ -48,9 +42,9 @@
 
 <body>
 
-    <!--<div class="arjs-loader">
-        <div>讀取中...</div>
-    </div>-->
+    <div class="arjs-loader">
+        <div>請橫放你的行動裝置</div>
+    </div>
 
     <script>
         const fileLoader = new THREE.FileLoader;
@@ -107,9 +101,32 @@
             'Layer07.gif']
         var currentIndex = 0;
         var windowWidth;
+        var isInit = false;
+        var orientation = screen.orientation || screen.mozOrientation || screen.msOrientation;
 
-        initialize();
-        animate();
+
+        window.addEventListener("orientationchange", function () {
+
+            if (orientation.type === "landscape-primary" || orientation.type === "landscape-secondary") {
+                console.log("That looks good.");
+                window.scrollTo(0, 1);
+                if (!isInit) {
+                    initialize();
+                    animate();
+                }
+            }
+            else if (orientation.type === "portrait-secondary" || orientation.type === "portrait-primary") {
+                console.log("Mmmh... you should rotate your device to landscape");
+                window.scrollTo(0, 0);
+            }
+
+        });
+
+        if (!isInit && (orientation.type === "landscape-primary" || orientation.type === "landscape-secondary")) {
+            window.scrollTo(0, 1);
+            initialize();
+            animate();
+        }
 
         function initialize() {
 
