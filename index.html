@@ -260,7 +260,7 @@
             var video = document.getElementById(id);
             video.load();
             video.play();
-            var videoTex = new THREE.VideoTexture(vide);
+            var videoTex = new THREE.VideoTexture(video);
             var material = new THREE.MeshBasicMaterial({
                 map: videoTex,
                 //transparent: true,
