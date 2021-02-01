@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>ARPostcard 2.34</title>
+    <title>ARPostcard 2.35</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -17,8 +17,6 @@
 <video id="dogLayer" loop crossOrigin="anonymous" playsinline style="display:none" autoplay muted>
     <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/mp4/movie.mp4">
 </video>
-
-
 
 
 <script>
@@ -138,11 +136,11 @@
                 alpha: true,
                 //logarithmicDepthBuffer: true
             });
-            renderer.setClearColor(0x000000, 0)
+            //renderer.setClearColor(0x000000, 0)
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.domElement.style.position = 'absolute'
-            renderer.domElement.style.top = '0px'
-            renderer.domElement.style.left = '0px'
+            //renderer.domElement.style.position = 'absolute'
+            //renderer.domElement.style.top = '0px'
+            //renderer.domElement.style.left = '0px'
             document.body.appendChild(renderer.domElement);
 
             // setup arToolkitSource
@@ -224,13 +222,12 @@
         }
 
         function onResize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
             arToolkitSource.onResizeElement()
             arToolkitSource.copyElementSizeTo(renderer.domElement)
             if (arToolkitContext.arController !== null) {
                 arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
             }
-            //renderer.setSize(window.innerWidth, window.innerHeight);
-            //mainCamera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
         }
 
         function LoadTexture(url, depth) {
