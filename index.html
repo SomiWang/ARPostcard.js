@@ -296,7 +296,7 @@
             // update artoolkit on every frame
             if (arToolkitSource.ready !== false) {
 
-                if (window.innerWidth !== windowWidth) onResize();
+                if (window.innerWidth > windowWidth * 1.5 || window.innerWidth * 1.5 < windowWidth) onResize();
                 arToolkitContext.update(arToolkitSource.domElement);
             }
         }
