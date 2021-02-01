@@ -199,7 +199,7 @@
         //LoadGIF('https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/Layers/Layer07.gif', -6);
 
 
-  
+        AddMp4("dogLayer");
 
 
 
@@ -262,6 +262,7 @@
         let mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(77, depth * 10, -55);
         mesh.rotation.x = -Math.PI / 2;
+        pivotRoot.add(mesh);
     }
 
     function AddToPivotRoot(tex, depth) {
