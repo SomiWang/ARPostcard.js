@@ -160,6 +160,10 @@
                 onResize();
             });
 
+            window.addEventListener('orientationchange', function () {
+                onResize();
+            });
+
             // setup arToolkitContext
 
             // create atToolkitContext
@@ -201,8 +205,6 @@
 
 
             AddMp4("dogLayer");
-
-
 
             // the invisibility cloak (box with a hole)
             let geometry0 = new THREE.BoxGeometry(16, 10, 14);
