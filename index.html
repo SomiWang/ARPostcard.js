@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>ARPostcard 2.32</title>
+    <title>ARPostcard 2.31</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
     <!-- three.js load GLTF -->
@@ -133,25 +133,17 @@
             scene.add(ambientLight);
 
             //Renderer
-            //renderer = new THREE.WebGLRenderer({
-            //    antialias: true,
-            //    alpha: true,
-            //    //logarithmicDepthBuffer: true
-            //});
-            //renderer.setClearColor(0x000000, 0)
-            //renderer.setSize(window.innerWidth, window.innerHeight);
-            //renderer.domElement.style.position = 'absolute'
-            //renderer.domElement.style.top = '0px'
-            //renderer.domElement.style.left = '0px'
-            //document.body.appendChild(renderer.domElement);
-
             renderer = new THREE.WebGLRenderer({
-                //canvas: canvas_draw,
-                alpha: true,
                 antialias: true,
+                alpha: true,
                 //logarithmicDepthBuffer: true
             });
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearColor(0x000000, 0)
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.domElement.style.position = 'absolute'
+            renderer.domElement.style.top = '0px'
+            renderer.domElement.style.left = '0px'
+            document.body.appendChild(renderer.domElement);
 
             // setup arToolkitSource
             arToolkitSource = new THREEx.ArToolkitSource({
@@ -237,6 +229,7 @@
             if (arToolkitContext.arController !== null) {
                 arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas)
             }
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         function LoadTexture(url, depth) {
