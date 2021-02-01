@@ -1,20 +1,15 @@
 <!DOCTYPE html>
+<html>
 <head>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta  charset="utf-8">
     <title>ARPostcard 2.36</title>
     <!-- three.js library -->
     <script src='three.js/examples/vendor/three.js/build/three.min.js'></script>
-    <!-- three.js load GLTF -->
-    <script src='three.js/examples/vendor/three.js/GLTFLoader.js'></script>
     <!-- ar.js -->
     <script src='three.js/build/ar-nft.js'></script>
-    <!-- Object3D.js -->
-    <script type="module" src='https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/three.js/src/core/Object3D.js'></script>
-    <script src='three.js/ComposedTexture.js/ComposedTexture.js'></script>
-    <script src="https://mevedia.com/share/gif.js"></script>
 </head>
 
-<video id="dogLayer" loop crossOrigin="anonymous" playsinline style="display:none" autoplay muted>
+<video id="movie" loop crossOrigin="anonymous" playsinline style="display:none" autoplay muted>
     <source src="https://arjs-cors-proxy.herokuapp.com/https://raw.githack.com/SomiWang/ARPostcardJs/master/data/mp4/movie.mp4">
 </video>
 
@@ -23,11 +18,12 @@
     window.addEventListener("load", function () {
 
         setTimeout(function () {
-            window.scrollTo(0, 1);
+            //window.scrollTo(0, 1);
         }, 10);
 
     });
 </script>
+
 <style>
     .arjs-loader {
         height: 100%;
@@ -42,23 +38,21 @@
         align-items: center;
     }
 
-        .arjs-loader div {
-            text-align: center;
-            font-size: 1.25em;
-            color: white;
-        }
+    .arjs-loader div {
+        text-align: center;
+        font-size: 1.25em;
+        color: white;
+     }
 </style>
 
 
-<body style="margin : 0px; overflow: hidden;">
+<body>
 
-    <div class="arjs-loader">
-        <div>Loading, please wait...</div>
-    </div>
+    <!--<div class="arjs-loader">
+        <div>Åª¨ú¤¤...</div>
+    </div>-->
 
-    <!--<body style='margin : 0px; overflow: hidden; font-family: Monospace;'>-->
     <script>
-
         const fileLoader = new THREE.FileLoader;
         const textureLoader = new THREE.TextureLoader;
 
@@ -117,11 +111,9 @@
         initialize();
         animate();
 
-
         function initialize() {
 
             windowWidth = window.innerWidth;
-
 
             scene = new THREE.Scene();
 
@@ -324,4 +316,4 @@
     </script>
 
 </body>
-    </html>
+</html>
